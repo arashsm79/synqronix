@@ -64,23 +64,134 @@ For example:
 load 081920_355l/allPlanesVariables27-Feb-2021.mat
 
 ## Keys of the mat file
+
+This is the output of `process_mat()` on an example session `allPlanesVariables27-Feb-2021.mat`.
+Each plane is identified from 0 to 6. Here only plane 1 is shown as an example for some of the fields.
 ```
-__header__
-__version__
-__globals__
-BFinfo
+BFInfo
+    1
+        cellnum: (8,)
+        NONcellnum: (49,)
+        BFval: (57,)
+        BFresp: (57,)
+        CFval: (57,)
+        CFresp: (57,)
+        BL: (57,)
+        fraVals: (57, 9)
+        bandwidth: (57,)
+        normFRA: (57, 9)
+        RFS: (57, 9)
+        RFSBinary: (57, 9)
+        sigRespCells: (8,)
+        sigOffRespCells: (13,)
+    ...
 CellInfo
+    1
+        cellDists: (57, 57)
+        cellAngles: (57, 57)
+        sigTrial: (57, 9, 10)
+        sigStim: (57, 9)
+        sigOff: (57, 9)
+    ...
 CorrInfo
+    1
+        SigCorrs: (57, 57)
+        NoiseCorrsTrial: (57, 57, 10)
+        NoiseCorrsVec: (57, 57)
+    ...
 allZCorrInfo
+    SigCorrs: (630, 630)
+    NoiseCorrsTrial: (630, 630, 10)
 allxc
+    0: (1, 0)
+    1: (57, 1)
+    2: (114, 1)
+    3: (121, 1)
+    4: (124, 1)
+    5: (114, 1)
+    6: (100, 1)
 allyc
+    0: (1, 0)
+    1: (57, 1)
+    2: (114, 1)
+    3: (121, 1)
+    4: (124, 1)
+    5: (114, 1)
+    6: (100, 1)
 allzc
-exptVars
-selectZCorrInfo
-stimInfo
+    0: (1, 0)
+    1: (57, 1)
+    2: (114, 1)
+    3: (121, 1)
+    4: (124, 1)
+    5: (114, 1)
+    6: (100, 1)
 zDFF
+    0: (1, 0)
+    1: (57, 2060)
+    2: (114, 2060)
+    3: (121, 2060)
+    4: (124, 2060)
+    5: (114, 2060)
+    6: (100, 2060)
+exptVars
+    dimX: ()
+    dimY: ()
+    numImages: ()
+    micronsPerPixel: ()
+    frameRate: ()
+    flybackFrames: ()
+    stepSizeUM: ()
+    numZSteps: ()
+    totalZplanes: ()
+    numVolumes: ()
+    segmentSize: ()
+selectZCorrInfo
+    SigCorrs: (530, 530)
+    NoiseCorrsTrial: (530, 530, 10)
+stimInfo
+    1
+        Psignalfile: ()
+        pfs: uint8
+        PrimaryDuration: uint8
+        PreStimSilence: uint8
+        PostStimSilence: uint8
+        BackgroundNoise: (3,)
+        OverallDB: uint8
+        Class: array('Tone      ', dtype='<U10')
+        Trialindicies: (90, 3)
+        framespertrial: array(90, dtype=uint8)
+        FreqLevelOrder: (90,)
+        Freqs: (90,)
+        Levels: (90,)
+        uFreqs: (9,)
+        uLevels: array(70, dtype=uint8)
+        sessionStartTime: MatlabOpaque((b'', b'MCOS', b'datetime', array([[3707764736],
+                            [         2],
+                            [         1],
+                            [         1],
+                            [         1],
+                            [         1]], dtype=uint32)),
+                                    dtype=[('s0', 'O'), ('s1', 'O'), ('s2', 'O'), ('arr', 'O')])
+        soundTimes: MatlabOpaque((b'', b'MCOS', b'datetime', array([[3707764736],
+                            [         2],
+                            [         1],
+                            [         1],
+                            [         2],
+                            [         1]], dtype=uint32)),
+                                    dtype=[('s0', 'O'), ('s1', 'O'), ('s2', 'O'), ('arr', 'O')])
+    ...
 zStuff
-__function_workspace__
+    1
+        flatFRA: (57, 9)
+        flatTrialFRA: (57, 9, 10)
+        pStim: (57, 9)
+        pTrial: (57, 9, 10)
+        zStimFrame: (90,)
+        trialFreq: (9, 10, 23)
+        exptFreq: (2060,)
+        trialDFF: (9, 10, 57, 23)
+    ...
 ```
 
 
