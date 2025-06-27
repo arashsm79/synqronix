@@ -97,7 +97,7 @@ CorrInfo
         NoiseCorrsVec: (57, 57)
     ...
 allZCorrInfo
-    SigCorrs: (630, 630)
+    SigCorrs: (630, 630) # For layers with index 1 to 6
     NoiseCorrsTrial: (630, 630, 10)
 allxc
     0: (1, 0)
@@ -143,8 +143,8 @@ exptVars
     totalZplanes: ()
     numVolumes: ()
     segmentSize: ()
-selectZCorrInfo
-    SigCorrs: (530, 530)
+selectZCorrInfo # only for layers with index 1 to 5
+    SigCorrs: (530, 530) 
     NoiseCorrsTrial: (530, 530, 10)
 stimInfo
     1
