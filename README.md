@@ -197,6 +197,22 @@ zStuff
     ...
 ```
 
+# Neuron Info Dataframe
+- Each row is a neuron
+- global_idx: is the global index of each neuron. from 0 to 529.
+- layer: the layer of each neruon
+- neuron_idx_in_layer: the index of each neuron in its layer
+- x: x coordinate of the neuron
+- y: y coordinate of the neuron
+- z: z coordinate of the neuron
+- activity: the activity of that neuron for the entire session
+- per_trial_activity: this is of shape (9, 10, num_time_steps) which is 9 frequencies 10 repetitions per frequency and time frames per trial. The frequency is an index into stimInfo/uFreqs to get the actual frequency that we don't care at the moment. we simply identify each frequency by its index from 0 to 8.
+- BFval: best frequency value for that neuron
+- BFresp: response of that neuron to its best frequency
+- PC: the first 4 principal component of each neuron for the entire session
+- global_corr: correlation array of each neuron to all the other neurons indexed by their global_idx
+- layer_distances: distance of each enuron to all the other neurons in its layer
+
 
 # Methods
 We presented tonal stimuli while imaging ∼1,000 neurons simultaneously to extract and analyze the topology of the functional networks within a cortical volume (∼370 × 370 × 100 µm). We found that volumes of L2/3 of the auditory cortex have a large diversity of tuning in relatively small volumes, yet still showed coarse spatial organization of similarly tuned neurons. Neurons were organized into microcolumns where neuronal tuning was similar with respect to depth but became dissimilar with respect to lateral distance away from the core of the columns. We constructed functional networks and found that functionally linked neurons were clustered in space, exhibited Rentian scaling, and that the functional network topology showed characteristics of small-world network organization. These two lines of evidence suggest that L2/3 auditory cortex neuronal networks fit characteristics of a cost-efficient organization, where functionally similar neurons are embedded in microcolumns while local tuning diversity is maintained, possibly to facilitate rapid plasticity and integration of information across the auditory cortex.

@@ -5,7 +5,7 @@ import scipy.io
 from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from pathlib import Path
-from synqronix.utils import process_mat
+from synqronix.dataproc.utils import process_mat
 import networkx as nx
 from sklearn.manifold import TSNE
 import plotly.graph_objects as go
