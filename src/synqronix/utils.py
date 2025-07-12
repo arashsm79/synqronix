@@ -6,7 +6,7 @@ import pennylane as qml
 import torch
 
 
-def setup_quantum_device(quantum_device, api_key, shots=1034, num_features=None):
+def setup_quantum_device(num_features, api_key, quantum_device, shots=None):
     """Set up the quantum device for PennyLane."""
     if quantum_device == "default":
         # Use the default PennyLane device
