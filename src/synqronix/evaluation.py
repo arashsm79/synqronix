@@ -24,11 +24,11 @@ def compute_metrics(y_true, y_pred, y_probs=None):
     """
     metrics = {
         'accuracy': accuracy_score(y_true, y_pred),
-        'f1_score': f1_score(y_true, y_pred, average='weighted'),
-        'f1_macro': f1_score(y_true, y_pred, average='macro'),
-        'f1_micro': f1_score(y_true, y_pred, average='micro'),
-        'precision': precision_score(y_true, y_pred, average='weighted'),
-        'recall': recall_score(y_true, y_pred, average='weighted'),
+        'f1_score': f1_score(y_true, y_pred, average='weighted', zero_division=0),
+        'f1_macro': f1_score(y_true, y_pred, average='macro', zero_division=0),
+        'f1_micro': f1_score(y_true, y_pred, average='micro', zero_division=0),
+        'precision': precision_score(y_true, y_pred, average='weighted', zero_division=0),
+        'recall': recall_score(y_true, y_pred, average='weighted', zero_division=0),
     }
     
     if y_probs is not None:

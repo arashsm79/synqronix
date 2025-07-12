@@ -1,11 +1,16 @@
 import torch
 import argparse
 import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
+from torch.nn import LeakyReLU, Linear, ReLU, Dropout
 from synqronix.dataproc.dataloader import NeuralGraphDataLoader, ColumnarNeuralGraphDataLoader
 from synqronix.models.gnn import NeuralGNN, NeuralGNNWithAttention
 from synqronix.trainer import GNNTrainer
 from synqronix.evaluation import full_evaluation, plot_training_curves, load_and_evaluate
+from synqronix.quantum_models.qgcn import QGCN
+from synqronix.config import define_parameters
 
 
 def set_seed(seed=42):
@@ -18,48 +23,7 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmark = False
 
 def main():
-    parser = argparse.ArgumentParser(description='Neural Graph Classification with GNN')
-    parser.add_argument('--data_dir', type=str, required=True,
-                      help='Directory containing .mat files')
-    parser.add_argument('--save_dir', type=str, default='./results',
-                      help='Directory to save results and checkpoints')
-    parser.add_argument('--model_type', type=str, default='GCN', choices=['GCN', 'GAT', 'AttentionGNN'],
-                      help='Type of GNN model to use')
-    parser.add_argument('--hidden_dim', type=int, default=64,
-                      help='Hidden dimension size')
-    parser.add_argument('--num_layers', type=int, default=3,
-                      help='Number of GNN layers')
-    parser.add_argument('--dropout_rate', type=float, default=0.5,
-                      help='Dropout rate')
-    parser.add_argument('--lr', type=float, default=0.001,
-                      help='Learning rate')
-    parser.add_argument('--weight_decay', type=float, default=1e-4,
-                      help='Weight decay')
-    parser.add_argument('--batch_size', type=int, default=32,
-                      help='Batch size')
-    parser.add_argument('--num_epochs', type=int, default=500,
-                      help='Number of training epochs')
-    parser.add_argument('--k', type=int, default=20,
-                      help='Number of top connected neurons for each neuron')
-    parser.add_argument('--connectivity_threshold', type=float, default=0.5,
-                      help='Threshold for functional connectivity')
-    parser.add_argument('--checkpoint_freq', type=int, default=5,
-                      help='Save checkpoint every N epochs')
-    parser.add_argument('--resume_from', type=str, default=None,
-                      help='Path to checkpoint to resume training from')
-    parser.add_argument('--evaluate_only', type=str, default=None,
-                      help='Path to checkpoint for evaluation only')
-    parser.add_argument('--seed', type=int, default=42,
-                      help='Random seed for reproducibility')
-    parser.add_argument('--col_width', type=int, default=50,
-                      help='Column width for anatomical dataset')
-    parser.add_argument('--col_height', type=int, default=30,
-                      help='Column height for anatomical dataset')
-    parser.add_argument('--dataset', type=str, default='functional', choices=['functional', 'anatomical'],
-                      help='Type of dataset to use (functional or anatomical)')
-    
-    args = parser.parse_args()
-    
+    args = define_parameters()
     set_seed(args.seed)
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -108,6 +72,13 @@ def main():
     
     if args.model_type == 'AttentionGNN':
         model = NeuralGNNWithAttention(**model_kwargs)
+
+    elif args.model_type == 'QGCN':
+        quantum_device = setup_quantum_device(args.quantum_device, num_features=model_kwargs['num_features'])
+        model = QGCN(input_dims=model_kwargs['num_features'], q_depths=args.q_depths, 
+                     output_dims=model_kwargs['num_classes'], activ_fn=LeakyReLU(0.2),
+                     dropout_rate=args.dropout_rate, hidden_dim=args.hidden_dim, 
+                     readout=False, quantum_device=quantum_device)
     else:
         model_kwargs['model_type'] = args.model_type
         model = NeuralGNN(**model_kwargs)
