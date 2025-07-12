@@ -7,7 +7,7 @@ from torch.nn import (Module, ModuleList, Linear, LeakyReLU,
 from torch_geometric.nn import global_mean_pool
 from torch_geometric.nn import MessagePassing
 
-from synqronix.quantum_models.qgcn_node_embedding import quantum_net
+from synqronix.models.qgcn_node_embedding import quantum_net
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
 from torch_geometric.typing import OptTensor
 
