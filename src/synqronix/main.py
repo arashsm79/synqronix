@@ -9,8 +9,9 @@ from synqronix.dataproc.dataloader import NeuralGraphDataLoader, ColumnarNeuralG
 from synqronix.models.gnn import NeuralGNN, NeuralGNNWithAttention
 from synqronix.trainer import GNNTrainer
 from synqronix.evaluation import full_evaluation, plot_training_curves, load_and_evaluate
-from synqronix.quantum_models.qgcn import QGCN
+from synqronix.models.qgcn import QGCN
 from synqronix.config import define_parameters
+from synqronix.utils import setup_quantum_device
 
 
 def set_seed(seed=42):
@@ -74,7 +75,8 @@ def main():
         model = NeuralGNNWithAttention(**model_kwargs)
 
     elif args.model_type == 'QGCN':
-        quantum_device = setup_quantum_device(args.quantum_device, num_features=model_kwargs['num_features'])
+        quantum_device = setup_quantum_device(num_features=model_kwargs['num_features'], api_key=args.api_key,
+                                               quantum_device=args.quantum_device)
         model = QGCN(input_dims=model_kwargs['num_features'], q_depths=args.q_depths, 
                      output_dims=model_kwargs['num_classes'], activ_fn=LeakyReLU(0.2),
                      dropout_rate=args.dropout_rate, hidden_dim=args.hidden_dim, 
