@@ -79,7 +79,7 @@ def add_quantum_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser
         help="Quantum backend name (e.g. 'ibmq_qasm_simulator', 'ionq_qpu')",
     )
     group.add_argument("--shots", type=int, default=None, help="Number of circuit executions per job (shots)")
-    group.add_argument("--qpu_api_key", type=str, default=None, help="Provider API key/token")
+    group.add_argument("--api_key", type=str, default=None, help="Provider API key/token")
     group.add_argument("--q_depths", type=int, nargs="+", default=[2, 2], help="Quantum circuit depths for each layer")
     return parser
 
@@ -107,7 +107,7 @@ def _validate_quantum_args(args: argparse.Namespace, parser: argparse.ArgumentPa
     if args.model_type == "QGNN":
         missing = [
             f"--{flag}"
-            for flag in ("quantum_device", "shots", "qpu_api_key")
+            for flag in ("quantum_device", "shots", "api_key")
             if getattr(args, flag) is None
         ]
         if missing:
