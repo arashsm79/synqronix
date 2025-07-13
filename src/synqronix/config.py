@@ -40,6 +40,7 @@ def add_graph_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     group = parser.add_argument_group("Graph construction")
     group.add_argument("--k", type=int, default=20, help="k‑NN connectivity for functional graphs")
     group.add_argument("--connectivity_threshold", type=float, default=0.5, help="Threshold for functional connectivity")
+    group.add_argument("--add_hyperedges", type=bool, default=False, help="Whether to add hyperedges to the graph (only for QGCN)")
     return parser
 
 

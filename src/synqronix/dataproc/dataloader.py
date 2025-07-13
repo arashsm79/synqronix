@@ -5,14 +5,16 @@ import torch
 from torch_geometric.data import Data, DataLoader
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 import scipy.io
-from synqronix.dataproc.utils import process_mat, create_neuron_info_df
+from dataproc.utils import process_mat, create_neuron_info_df
 from torch_geometric.utils import to_undirected
+from itertools import combinations
 
 class NeuralGraphDataLoader:
-    def __init__(self, data_dir, k=20, connectivity_threshold=0.5, batch_size=32):
+    def __init__(self, data_dir, add_hyperedges=False, k=20, connectivity_threshold=0.5, batch_size=32):
         """
         Args:
             data_dir: Directory containing .mat files
+            add_hyperedges: Whether to add hyperedges to the graph
             k: Number of top connected neurons to consider for each neuron
             connectivity_threshold: Threshold for functional connectivity
             batch_size: Batch size for DataLoader
@@ -23,6 +25,7 @@ class NeuralGraphDataLoader:
         self.batch_size = batch_size
         self.scaler = StandardScaler()
         self.label_encoder = LabelEncoder()
+        self.add_hyperedges = add_hyperedges
         
     def load_session_data(self, mat_file_path):
         """Load and process a single session"""
@@ -109,8 +112,33 @@ class NeuralGraphDataLoader:
         # Convert to tensors
         x = torch.tensor(node_features, dtype=torch.float)
         y = torch.tensor(node_labels, dtype=torch.long)
-        
-        return Data(x=x, edge_index=edge_index, edge_attr=edge_attr, y=y)
+
+        # Add hyperedges if required
+        if self.add_hyperedges:
+            # correlation (or distance) matrix *restricted to this subgraph*
+            C_sub = np.vstack(neuron_df.iloc[subgraph_indices]['global_corr'])  # (n,n)
+
+            hyperedges = []
+            for i, j, k in combinations(range(len(subgraph_indices)), 3):
+                if (abs(C_sub[i, j]) >= self.connectivity_threshold and
+                    abs(C_sub[i, k]) >= self.connectivity_threshold and
+                    abs(C_sub[j, k]) >= self.connectivity_threshold):
+                    hyperedges.append([i, j, k])
+
+            if not hyperedges:                               # guarantee non-empty
+                hyperedges = [[0, 0, 0]] if x.size(0) < 3 else [[0, 1, 2]]
+
+            # shape (3, num_triangles)
+            hyperedge_index = torch.tensor(hyperedges,
+                                        dtype=torch.long).t().contiguous()
+
+            return Data(x=x,
+                        edge_index=edge_index,
+                        edge_attr=edge_attr,
+                        y=y,
+                        hyperedge_index=hyperedge_index)
+        else:
+            return Data(x=x, edge_index=edge_index, edge_attr=edge_attr, y=y)
     
     def create_all_subgraphs_from_session(self, neuron_df):
         """Create all neuron-centered subgraphs from a session"""
@@ -211,7 +239,7 @@ class NeuralGraphDataLoader:
         return len(self.label_encoder.classes_)
 
 class ColumnarNeuralGraphDataLoader(NeuralGraphDataLoader):
-    def __init__(self, data_dir, k=20, column_width=50, column_height=50, batch_size=32):
+    def __init__(self, data_dir, add_hyperedges=False, k=20, column_width=50, column_height=50, batch_size=32):
         """
         Args:
             data_dir: Directory containing .mat files
@@ -224,6 +252,7 @@ class ColumnarNeuralGraphDataLoader(NeuralGraphDataLoader):
         super().__init__(data_dir, k, connectivity_threshold=0.0, batch_size=batch_size)
         self.column_width = column_width
         self.column_height = column_height
+        self.add_hyperedges = add_hyperedges
         
     def find_columnar_neighbors(self, neuron_df, center_neuron_idx):
         """Find neurons within the same column as the center neuron"""
@@ -323,5 +352,33 @@ class ColumnarNeuralGraphDataLoader(NeuralGraphDataLoader):
         # Convert to tensors
         x = torch.tensor(node_features, dtype=torch.float)
         y = torch.tensor(node_labels, dtype=torch.long)
+
+        # Add hyperedges
+        if self.add_hyperedges:
+
+            C_sub = np.vstack(neuron_df.iloc[subgraph_indices]['global_corr'])  # (n,n)
+
+            hyperedges = []
+            for i, j, k in combinations(range(len(subgraph_indices)), 3):
+                if (abs(C_sub[i, j]) >= self.connectivity_threshold and
+                    abs(C_sub[i, k]) >= self.connectivity_threshold and
+                    abs(C_sub[j, k]) >= self.connectivity_threshold):
+                    hyperedges.append([i, j, k])
+
+            if not hyperedges:                               # guarantee non-empty
+                hyperedges = [[0, 0, 0]] if x.size(0) < 3 else [[0, 1, 2]]
+
+            # shape (3, num_triangles)
+            hyperedge_index = torch.tensor(hyperedges,
+                                        dtype=torch.long).t().contiguous()
+            # ─────────────────────────────────────────────────────────────────── #
+
+            return Data(x=x,
+                        edge_index=edge_index,
+                        edge_attr=edge_attr,
+                        y=y,
+                        hyperedge_index=hyperedge_index)   # ← only new field
+        else: 
+            return Data(x=x, edge_index=edge_index, edge_attr=edge_attr, y=y)
         
-        return Data(x=x, edge_index=edge_index, edge_attr=edge_attr, y=y)
+        

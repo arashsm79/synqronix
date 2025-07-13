@@ -6,11 +6,11 @@ from torch.nn import (Module, ModuleList, Linear, LeakyReLU,
                       Dropout, LogSoftmax, ReLU, Parameter, LayerNorm)
 from torch_geometric.nn import global_mean_pool
 from torch_geometric.nn import MessagePassing
-
-from synqronix.models.qgcn_node_embedding import quantum_net
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
 from torch_geometric.typing import OptTensor
+from torch_geometric.nn import HypergraphConv
 
+from models.qgcn_node_embedding import quantum_net
 
 
 class GCNConv(MessagePassing):
@@ -22,6 +22,7 @@ class GCNConv(MessagePassing):
         if not self.no_NN:
             assert out_channels is None or in_channels == out_channels
             out_channels = out_channels or in_channels
+            self.lin =torch.nn.Identity()
         else:
             out_channels = in_channels
             
@@ -74,10 +75,20 @@ class QGCNConv(GCNConv):
         # Example: use the quantum circuit instead of a Linear layer
         return self.nodeNN(aggr_out)
 
+class QHyperConv(HypergraphConv):
+    def __init__(self, channels, q_depth=2):
+        super().__init__(channels, channels)
+        self.nodeNN = quantum_net(channels, q_depth)
+
+    def forward(self, x, hyperedge_index, hyperedge_attr=None):
+        h = super().forward(x, hyperedge_index, hyperedge_attr)
+        return self.nodeNN(h)
+
+
 
 class QGCN(Module):
 
-    def __init__(self, input_dims, q_depths, output_dims, hidden_dim=64, 
+    def __init__(self, input_dims, q_depths, output_dims, add_hyperedges=False, hidden_dim=64, 
                  dropout_rate=0.2, activ_fn=LeakyReLU(0.2), readout=False,
                  quantum_device=None):
 
@@ -87,7 +98,10 @@ class QGCN(Module):
 
         for q_depth in q_depths:
             nodeNN = quantum_net(self.n_qubits, q_depth, quantum_device=quantum_device)
-            QGCNConv_layer = QGCNConv(in_channels=self.n_qubits, nodeNN=nodeNN)
+            if add_hyperedges:
+                QGCNConv_layer = QHyperConv(in_channels=self.n_qubits, q_depth=q_depth)
+            else:
+                QGCNConv_layer = QGCNConv(in_channels=self.n_qubits, nodeNN=nodeNN)
             layers.append(QGCNConv_layer)
 
         self.layers = ModuleList(layers)

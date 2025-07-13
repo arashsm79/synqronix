@@ -1,6 +1,4 @@
 import pennylane as qml
-from synqronix.utils import setup_quantum_device
-
 
 def CRZ_layer(nqubits, w):
     """Layer of single-qubit CRZ gates.
@@ -50,8 +48,8 @@ def entangling_layer(nqubits):
     qml.CNOT(wires=[nqubits-1, 0])
 
 
-def quantum_net(n_qubits, q_depth, quantum_device=None):
-
+def quantum_net(n_qubits, q_depth, quantum_device):
+    
     @qml.qnode(quantum_device, interface='torch')
     def quantum_circuit(inputs, q_weights_flat):
         """
