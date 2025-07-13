@@ -3,11 +3,10 @@ import argparse
 import os
 import sys
 
-# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from torch.nn import LeakyReLU, Linear, ReLU, Dropout
 from src.synqronix.dataproc.dataloader import NeuralGraphDataLoader, ColumnarNeuralGraphDataLoader
-from src.synqronix.models.gnn import NeuralGNN, NeuralGNNWithAttention
+from src.synqronix.models.gnn import NeuralGNN, NeuralGNNWithAttention, HyperGNN
 from src.synqronix.trainer import GNNTrainer
 from src.synqronix.evaluation import full_evaluation, plot_training_curves, load_and_evaluate
 from src.synqronix.models.qgcn import QGCN
@@ -41,7 +40,8 @@ def build_data(args):
             data_dir=args.data_dir,
             k=args.k,
             connectivity_threshold=args.connectivity_threshold,
-            batch_size=args.batch_size
+            batch_size=args.batch_size,
+            add_hyperedges=args.add_hyperedges,
         )
     elif args.dataset == 'anatomical':
         dataloader = ColumnarNeuralGraphDataLoader(
@@ -49,7 +49,8 @@ def build_data(args):
             k=args.k,
             column_width=args.col_width,
             column_height=args.col_height,
-            batch_size=args.batch_size
+            batch_size=args.batch_size,
+            add_hyperedges=args.add_hyperedges
         )
     else:
         raise ValueError(f"Unsupported dataset type: {args.dataset}")
@@ -78,11 +79,13 @@ def main(args, dataloader, train_loader, val_loader, test_loader, device, checkp
 
     elif args.model_type == 'QGCN':
         quantum_device = setup_quantum_device(num_features=model_kwargs['num_features'], api_key=args.api_key,
-                                               quantum_device=args.quantum_device)
+                                               quantum_device=args.quantum_device, shots=args.shots)
         model = QGCN(input_dims=model_kwargs['num_features'], q_depths=args.q_depths, 
                      output_dims=model_kwargs['num_classes'], activ_fn=LeakyReLU(0.2),
-                     dropout_rate=args.dropout_rate, hidden_dim=args.hidden_dim, 
-                     readout=False, quantum_device=quantum_device)
+                     dropout_rate=args.dropout_rate, add_hyperedges=args.add_hyperedges,
+                     hidden_dim=args.hidden_dim, readout=False, quantum_device=quantum_device)
+    elif args.model_type == 'HyperGNN':
+        model = HyperGNN(**model_kwargs)
     else:
         model_kwargs['model_type'] = args.model_type
         model = NeuralGNN(**model_kwargs)
@@ -102,6 +105,7 @@ def main(args, dataloader, train_loader, val_loader, test_loader, device, checkp
     trainer = GNNTrainer(
         model=model,
         device=device,
+        add_hyperedges=args.add_hyperedges,
         save_dir=checkpoint_dir,
         checkpoint_freq=args.checkpoint_freq
     )
@@ -150,7 +154,8 @@ def main(args, dataloader, train_loader, val_loader, test_loader, device, checkp
     print(f"Final test ROC AUC: {test_results['metrics']['roc_auc']:.4f}")
 
 if __name__ == "__main__":
-    args = define_parameters()
+    parser = define_parameters()
+    args = parser.parse_args()
     (data_loader, train_loader, val_loader, 
     test_loader, device, checkpoint_dir, eval_dir) = build_data(args)
     main(args, data_loader, train_loader, val_loader, test_loader, device, checkpoint_dir, eval_dir)

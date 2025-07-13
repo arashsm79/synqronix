@@ -4,7 +4,7 @@ import argparse
 def add_io_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     """File-system input/output."""
     group = parser.add_argument_group("I/O")
-    group.add_argument("--data_dir", type=str, default="./data", help="Directory containing .mat files")
+    group.add_argument("--data_dir", type=str, default="/Users/mariayuffa/Downloads/Auditory cortex data", help="Directory containing .mat files")
     group.add_argument("--save_dir", type=str, default="./results", help="Directory to save results and checkpoints")
     return parser
 
@@ -16,7 +16,7 @@ def add_model_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
         "--model_type",
         type=str,
         default="QGCN",
-        choices=["GCN", "GAT", "AttentionGNN", "QGCN"],
+        choices=["GCN", "GAT", "AttentionGNN", "QGCN", "HyperGNN"],
         help="Type of (quantum) GNN model to use",
     )
     group.add_argument("--hidden_dim", type=int, default=64, help="Hidden dimension size")
@@ -75,13 +75,13 @@ def add_quantum_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser
     group.add_argument(
         "--quantum_device",
         type=str,
-        default=None,
+        default='default',
         choices=["ionq_aria", "ionq_forte", "default", "ionq_sim"],
         help="Quantum backend name (e.g. 'ibmq_qasm_simulator', 'ionq_qpu')",
     )
     group.add_argument("--shots", type=int, default=None, help="Number of circuit executions per job (shots)")
     group.add_argument("--api_key", type=str, default=None, help="Provider API key/token")
-    group.add_argument("--q_depths", type=int, nargs="+", default=[2, 2], help="Quantum circuit depths for each layer")
+    group.add_argument("--q_depths", type=list, nargs="+", default=[2, 2], help="Quantum circuit depths for each layer")
     return parser
 
 def build_arg_parser() -> argparse.ArgumentParser:

@@ -1,5 +1,6 @@
 import pennylane as qml
 
+
 def CRZ_layer(nqubits, w):
     """Layer of single-qubit CRZ gates.
     """
@@ -75,5 +76,6 @@ def quantum_net(n_qubits, q_depth, quantum_device):
         exp_vals = [qml.expval(qml.PauliZ(i))
                     for i in range(n_qubits)]
         return exp_vals
+
     
     return qml.qnn.TorchLayer(quantum_circuit, {"q_weights_flat": (2*q_depth*n_qubits)})

@@ -37,6 +37,21 @@ class NeuralGraphDataLoader:
         
         return neuron_df
     
+    def triangles_to_incidence(self, triangles: list[list[int]]) -> torch.Tensor:
+        """
+        triangles : list of [i, j, k]   node indices (length-3 tuples)
+
+        returns   : LongTensor shape (2 , 3·M)
+        """
+        rows_node   = []
+        rows_hid    = []
+
+        for hid, (i, j, k) in enumerate(triangles):
+            rows_node += [i, j, k]          # nodes of this triangle
+            rows_hid  += [hid, hid, hid]    # same hyper-edge id
+
+        return torch.tensor([rows_node, rows_hid], dtype=torch.long)
+    
     def create_subgraph_for_neuron(self, neuron_df, center_neuron_idx):
         """Create a subgraph centered around a specific neuron"""
         center_neuron = neuron_df.iloc[center_neuron_idx]
@@ -129,8 +144,9 @@ class NeuralGraphDataLoader:
                 hyperedges = [[0, 0, 0]] if x.size(0) < 3 else [[0, 1, 2]]
 
             # shape (3, num_triangles)
-            hyperedge_index = torch.tensor(hyperedges,
-                                        dtype=torch.long).t().contiguous()
+            # hyperedge_index = torch.tensor(hyperedges,
+            #                             dtype=torch.long).t().contiguous()
+            hyperedge_index = self.triangles_to_incidence(hyperedges)
 
             return Data(x=x,
                         edge_index=edge_index,
@@ -276,6 +292,7 @@ class ColumnarNeuralGraphDataLoader(NeuralGraphDataLoader):
         
         return columnar_indices
     
+    
     def create_subgraph_for_neuron(self, neuron_df, center_neuron_idx):
         """Create a subgraph centered around a specific neuron using columnar sampling"""
         # Find neurons in the same column
@@ -369,10 +386,9 @@ class ColumnarNeuralGraphDataLoader(NeuralGraphDataLoader):
                 hyperedges = [[0, 0, 0]] if x.size(0) < 3 else [[0, 1, 2]]
 
             # shape (3, num_triangles)
-            hyperedge_index = torch.tensor(hyperedges,
-                                        dtype=torch.long).t().contiguous()
-            # ─────────────────────────────────────────────────────────────────── #
-
+            # hyperedge_index = torch.tensor(hyperedges,
+            #                                 dtype=torch.long).t().contiguous()
+            hyperedge_index = self.triangles_to_incidence(hyperedges)
             return Data(x=x,
                         edge_index=edge_index,
                         edge_attr=edge_attr,

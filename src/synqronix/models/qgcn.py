@@ -8,6 +8,7 @@ from torch_geometric.typing import OptTensor
 from torch_geometric.nn import HypergraphConv
 
 from src.synqronix.models.qgcn_node_embedding import quantum_net
+import time
 
 
 class GCNConv(MessagePassing):
@@ -73,9 +74,10 @@ class QGCNConv(GCNConv):
         return self.nodeNN(aggr_out)
 
 class QHyperConv(HypergraphConv):
-    def __init__(self, channels, q_depth=2):
-        super().__init__(channels, channels)
-        self.nodeNN = quantum_net(channels, q_depth)
+    def __init__(self, in_channels, nodeNN):
+        super().__init__(in_channels, 
+                         out_channels=in_channels)
+        self.nodeNN = nodeNN
 
     def forward(self, x, hyperedge_index, hyperedge_attr=None):
         h = super().forward(x, hyperedge_index, hyperedge_attr)
@@ -92,11 +94,12 @@ class QGCN(Module):
         super().__init__()
         layers = []
         self.n_qubits = input_dims
+        self.quantum_device = quantum_device
 
         for q_depth in q_depths:
-            nodeNN = quantum_net(self.n_qubits, q_depth, quantum_device=quantum_device)
+            nodeNN = quantum_net(self.n_qubits, q_depth, quantum_device=self.quantum_device)
             if add_hyperedges:
-                QGCNConv_layer = QHyperConv(in_channels=self.n_qubits, q_depth=q_depth)
+                QGCNConv_layer = QHyperConv(in_channels=self.n_qubits, nodeNN=nodeNN)
             else:
                 QGCNConv_layer = QGCNConv(in_channels=self.n_qubits, nodeNN=nodeNN)
             layers.append(QGCNConv_layer)
@@ -123,15 +126,19 @@ class QGCN(Module):
                 torch.nn.init.xavier_uniform_(m.weight)
                 torch.nn.init.zeros_(m.bias)
 
-    def forward(self, x, edge_index, edge_attr, batch):
+    def forward(self, x, edge_index=None, edge_attr=None, hyperedge_index=None, batch=None):
         """
         Defining how tensors are supposed to move through the *dressed* quantum
         net.
         """
 
         h = x
-        for i in range(len(self.layers)):
-            h = self.layers[i](h, edge_index, edge_attr)
+        for layer in self.layers:
+            if isinstance(layer, QHyperConv):
+                h = layer(h, hyperedge_index=hyperedge_index)
+            else:
+                h = layer(h, edge_index=edge_index, edge_weight=edge_attr)
+
             h = self.activ_fn(h)
             h = self.norm(h)
 

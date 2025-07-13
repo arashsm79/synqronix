@@ -147,11 +147,11 @@ class HyperGNN(nn.Module):
     """
 
     def __init__(self, num_features, num_classes,
-                 hidden_dim=64, num_layers=3, dropout=0.5):
+                 hidden_dim=64, num_layers=3, dropout_rate=0.5):
         super().__init__()
 
         self.num_layers = num_layers
-        self.dropout    = dropout
+        self.dropout_rate    = dropout_rate
 
         self.convs = nn.ModuleList()
         self.norms = nn.ModuleList()
@@ -173,22 +173,22 @@ class HyperGNN(nn.Module):
         self.classifier = nn.Sequential(
             nn.Linear(hidden_dim, hidden_dim // 2),
             nn.ReLU(),
-            nn.Dropout(dropout),
+            nn.Dropout(self.dropout_rate),
             nn.Linear(hidden_dim // 2, num_classes)
         )
 
     # --------------------------------------------------------
-    def forward(self, x, edge_index=None, edge_attr=None,
+    def forward(self, x, edge_index=None, edge_attr=None, 
                 hyperedge_index=None, batch=None):
         """
         Exactly the same call signature as your QGCN, but the
         hyperedge_index is the one that matters.
         """
         for conv, norm in zip(self.convs, self.norms):
-            x = conv(x, hyperedge_index)      # <── classical H-graph message
+            x = conv(x, hyperedge_index)    
             x = norm(x)
             x = F.relu(x)
-            x = F.dropout(x, p=self.dropout, training=self.training)
+            x = F.dropout(x, p=self.dropout_rate, training=self.training)
 
         # node-level prediction: no pooling
         return self.classifier(x)

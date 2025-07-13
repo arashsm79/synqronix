@@ -12,13 +12,17 @@ def setup_quantum_device(num_features, api_key, quantum_device, shots=None):
         # Use the default PennyLane device
         pl_dev = qml.device("default.qubit", wires=num_features, shots=shots)
         return pl_dev
+    
+    elif quantum_device == "lightning":
+        pl_dev = qml.device("lightning.qubit", wires=num_features, shots=shots)
+        return pl_dev
 
     elif quantum_device == "ionq_aria":
-        device_name = "arn:aws:braket:us-east-1::device/qpu/ionq/Aria-2"
+        device_name = "arn:aws:braket:us-east-1::device/qpu/ionq/Aria-1"
+
 
     elif quantum_device == "ionq_forte":
         device_name = "arn:aws:braket:us-east-1::device/qpu/ionq/Forte-1"
-
 
     provider      = BraketProvider(api_key)
     ionq_device   = provider.get_device(
@@ -26,7 +30,7 @@ def setup_quantum_device(num_features, api_key, quantum_device, shots=None):
     )
 
     aws_sess      = provider._get_aws_session()                
-
+    
     pl_dev = qml.device(
         "braket.aws.qubit",
         device_arn = ionq_device._device.arn,

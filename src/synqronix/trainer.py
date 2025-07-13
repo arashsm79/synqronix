@@ -7,21 +7,23 @@ import time
 from tqdm import tqdm
 import numpy as np
 from src.synqronix.evaluation import evaluate_model, compute_metrics
-from src.synqronix.models.gnn import NeuralGNN, NeuralGNNWithAttention
+from src.synqronix.models.gnn import NeuralGNN, NeuralGNNWithAttention, HyperGNN
 
 class GNNTrainer:
-    def __init__(self, model, device, save_dir='checkpoints', checkpoint_freq=5):
+    def __init__(self, model, device, add_hyperedges=False, save_dir='checkpoints', checkpoint_freq=5):
         """
         Trainer for Graph Neural Networks
         
         Args:
             model: The GNN model to train
             device: Device to run training on
+            add_hyperedges: Whether to include hyperedges in the model
             save_dir: Directory to save checkpoints
             checkpoint_freq: Save checkpoint every N epochs
         """
         self.model = model.to(device)
         self.device = device
+        self.add_hyperedges = add_hyperedges
         self.save_dir = save_dir
         self.checkpoint_freq = checkpoint_freq
         self.grace_period = 5
@@ -62,13 +64,12 @@ class GNNTrainer:
         for batch in train_bar:
             batch = batch.to(self.device)
             self.optimizer.zero_grad()
-            
-            # if isinstance(self.model, NeuralGNNWithAttention):
-            #     out = self.model(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
-            # else:
 
-            out = self.model(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
-            
+            if self.add_hyperedges:
+                out = self.model(x=batch.x, edge_attr=batch.edge_attr, hyperedge_index=batch.hyperedge_index, batch=batch.batch)
+            else:
+                out = self.model(x=batch.x, edge_index=batch.edge_index, edge_attr=batch.edge_attr, batch=batch.batch)
+
             loss = self.criterion(out, batch.y)
             
             loss.backward()
@@ -102,8 +103,11 @@ class GNNTrainer:
         with torch.no_grad():
             for batch in tqdm(val_loader, desc="Validation"):
                 batch = batch.to(self.device)
-                
-                out = self.model(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
+
+                if self.add_hyperedges:
+                    out = self.model(x=batch.x, edge_attr=batch.edge_attr, hyperedge_index=batch.hyperedge_index, batch=batch.batch)
+                else:
+                    out = self.model(x=batch.x, edge_index=batch.edge_index, edge_attr=batch.edge_attr, batch=batch.batch)
                 
                 loss = self.criterion(out, batch.y)
                 total_loss += loss.item()
