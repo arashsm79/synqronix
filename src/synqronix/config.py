@@ -4,7 +4,7 @@ import argparse
 def add_io_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     """File-system input/output."""
     group = parser.add_argument_group("I/O")
-    group.add_argument("--data_dir", type=str, default="/Users/mariayuffa/Downloads/Auditory cortex data", help="Directory containing .mat files")
+    group.add_argument("--data_dir", type=str, default="./data/Auditory cortex data", help="Directory containing .mat files")
     group.add_argument("--save_dir", type=str, default="./results", help="Directory to save results and checkpoints")
     return parser
 
