@@ -1,0 +1,57 @@
+name: Train-GCN-QGCN-on-qBraid
+
+on:
+  workflow_dispatch:
+    inputs:
+      data_dir:
+        description: "Path in repo or S3 (mounted in qBraid)"
+        required: true
+        default: "data/"
+      save_dir:
+        description: "Path to save model checkpoints"
+        required: true
+        default: "checkpoints/"
+      num_epochs:
+        description: "Training epochs"
+        required: true
+        default: "100"
+      quantum_device:
+        description: "Quantum device to use (e.g., 'ionq')"
+        default: "ionq_aria"
+        required: true
+
+
+jobs:
+  launch:
+    runs-on: ubuntu-latest        # This runner just calls qBraid
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install qBraid CLI
+      run: |
+        pip install --quiet qbraid
+
+    - name: Login to qBraid
+      env:
+        QBRAID_API_KEY: ${{ secrets.QBRAID_API_KEY }}   # store in repo secrets
+      run: |
+        qbraid login --apikey "$QBRAID_API_KEY"
+
+    - name: Start notebook & run training script
+      env:
+        # Pass workflow inputs to notebook as a JSON string
+        QBRAID_RUN_INPUTS: >-
+          {
+            "data_dir": "${{ github.event.inputs.data_dir }}",
+            "save_dir": "${{ github.event.inputs.save_dir }}",
+            "num_epochs": "${{ github.event.inputs.num_epochs }}",
+            "quantum_device": "${{ github.event.inputs.quantum_device }}"
+          }
+      run: |
+        qbraid notebooks run \
+          --image "python-3.10-cuda" \
+          --requirements "./requirements.txt" \
+          --cmd "python run_models.py" \
+          --timeout 60   # minutes

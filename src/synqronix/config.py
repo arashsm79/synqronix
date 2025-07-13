@@ -40,7 +40,7 @@ def add_graph_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     group = parser.add_argument_group("Graph construction")
     group.add_argument("--k", type=int, default=20, help="k‑NN connectivity for functional graphs")
     group.add_argument("--connectivity_threshold", type=float, default=0.5, help="Threshold for functional connectivity")
-    group.add_argument("--add_hyperedges", type=bool, default=False, help="Whether to add hyperedges to the graph (only for QGCN)")
+    group.add_argument("--add_hyperedges", type=bool, default=False, help="Whether to add hyperedges to the graph")
     return parser
 
 
@@ -76,11 +76,12 @@ def add_quantum_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser
         "--quantum_device",
         type=str,
         default=None,
+        required=True,
         choices=["ionq_aria", "ionq_forte", "default", "ionq_sim"],
         help="Quantum backend name (e.g. 'ibmq_qasm_simulator', 'ionq_qpu')",
     )
     group.add_argument("--shots", type=int, default=None, help="Number of circuit executions per job (shots)")
-    group.add_argument("--api_key", type=str, default=None, help="Provider API key/token")
+    group.add_argument("--api_key", type=str, default=None, required=True, help="Provider API key/token")
     group.add_argument("--q_depths", type=int, nargs="+", default=[2, 2], help="Quantum circuit depths for each layer")
     return parser
 

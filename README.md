@@ -1,3 +1,16 @@
+[<img src="https://qbraid-static.s3.amazonaws.com/logos/Launch_on_qBraid_black.png" width="150">](https://account.qbraid.com?gitHubUrl=<YOUR GIT .git LINK>)
+
+# To run the code
+
+1.  Click the "Launch on qBraid" button above. This will open a new qBraid Lab instance and clone this repository.
+2.  Once qBraid Lab loads, open a new Terminal (File -> New -> Terminal).
+3.  Activate the correct environment (if you have one specified in a `.qbraid/environment.yaml` or similar, or just assume the default Python kernel).
+4.  Run the training script using:
+    ```bash
+    python run_models.py --data_dir data/ --num_epochs 100 --quantum_device ionq_aria --api_key your_qbraid_qpi_key
+    ```
+    (Adjust the parameters as needed.)
+
 # Introduction
 
 Bowen et al., "Fractured columnar small-world functional network organization in volumes of L2/3 of mouse auditory cortex," PNAS Nexus, Volume 3, Issue 2, February 2024, pgae074, https://doi.org/10.1093/pnasnexus/pgae074
@@ -251,3 +264,5 @@ For all the tasks below we sub sample graphs of aorund 10-20 nodes either using 
     Graph classification
 
 4- For each sampled grpah we can check the diversity of BF and draw conclusions based on the classifciation/prediciton results. e. g. graphs with strong BF preference have better performance.
+
+To run the code click on the button below! 

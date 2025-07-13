@@ -2,6 +2,8 @@ import torch
 import argparse
 import os
 import sys
+
+from synqronix.dataproc import dataloader
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from torch.nn import LeakyReLU, Linear, ReLU, Dropout
@@ -23,8 +25,7 @@ def set_seed(seed=42):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-def main():
-    args = define_parameters()
+def build_data(args):
     set_seed(args.seed)
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -62,7 +63,9 @@ def main():
     print(f"Train batches: {len(train_loader)}")
     print(f"Validation batches: {len(val_loader)}")
     print(f"Test batches: {len(test_loader)}")
-    
+    return dataloader, train_loader, val_loader, test_loader, device, checkpoint_dir, eval_dir
+
+def main(args, dataloader, train_loader, val_loader, test_loader, device, checkpoint_dir, eval_dir):
     model_kwargs = {
         'num_features': dataloader.get_num_features(),
         'num_classes': dataloader.get_num_classes(),
@@ -148,4 +151,7 @@ def main():
     print(f"Final test ROC AUC: {test_results['metrics']['roc_auc']:.4f}")
 
 if __name__ == "__main__":
-    main()
+    args = define_parameters()
+    (data_loader, train_loader, val_loader, 
+    test_loader, device, checkpoint_dir, eval_dir) = build_data(args)
+    main(args, data_loader, train_loader, val_loader, test_loader, device, checkpoint_dir, eval_dir)

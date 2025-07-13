@@ -1,6 +1,3 @@
-import os
-
-from xml.parsers.expat import model
 import torch
 from torch.nn import (Module, ModuleList, Linear, LeakyReLU, 
                       Dropout, LogSoftmax, ReLU, Parameter, LayerNorm)
