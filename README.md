@@ -3,7 +3,8 @@
 # To run the code
 
 1.  Click the "Launch on qBraid" button above. This will open a new qBraid Lab instance and clone this repository.
-2.  Once qBraid Lab loads, run the `run_models.ipynb` notebook.
+2.  Download the data from this link and put it in `/data` folder: https://gcell.umd.edu/. 
+3.  Once qBraid Lab loads, run the `run_models.ipynb` notebook.
     (Adjust the parameters as needed.)
 
 # 🧠 Mouse Auditory Cortex: Network Analysis with QGNNs  
