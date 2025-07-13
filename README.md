@@ -6,68 +6,68 @@
 2.  Once qBraid Lab loads, run the `run_models.ipynb` notebook.
     (Adjust the parameters as needed.)
 
-# Introduction
+# 🧠 Mouse Auditory Cortex: Network Analysis with QGNNs  
 
-Bowen et al., "Fractured columnar small-world functional network organization in volumes of L2/3 of mouse auditory cortex," PNAS Nexus, Volume 3, Issue 2, February 2024, pgae074, https://doi.org/10.1093/pnasnexus/pgae074
+This project is based on the study by Bowen et al., _"Fractured columnar small-world functional network organization in volumes of L2/3 of mouse auditory cortex,"_ [PNAS Nexus, 2024](https://doi.org/10.1093/pnasnexus/pgae074).
+This is part of the **NeuroQuantum Nexus– Global Industry Challenge 2025**.
 
+---
 
-On a broad scale, neurons in sensory cortices are organized in functional maps in which neurons with similar stimulus selectivity are located close to each other. This organization is largely inherited from the peripheral receptors, e.g. the cochlea or retina, and in the auditory cortex forms a large-scale map of frequency preference, or tonotopy. Thus, tonal sound stimuli yield activity in topographically localized regions. In the primary auditory cortex (A1) a large-scale tonotopic organization is present along a cardinal, mostly rostro-caudal, direction of A1 (1–3). However, while this smooth gradient exists on the coarse scale, neighboring A1 neurons in the superficial layers (L2/3) can show quite different frequency preferences, while neighboring neurons in the thalamocortical recipient layers (L4) are more similar to each other (1, 4–10). Behaviorally relevant sound stimuli are encoded by small populations of cells in L2/3 (11–18) suggesting that even though L2/3 seems functionally heterogeneous, it might contain embedded networks.
+## 📚 Table of Contents
+- 🚀 [Quick Start](#quick-start)
+- 🧬 [Paper Summary](#paper-summary)
+- 🗂️ [Data Structure](#data-structure)
+- 🧾 [Data Format](#data-format)
 
-Functional networks can be constructed from activity relationships such as signal correlations (SCs), which quantify how neurons respond to stimuli similarly. Calculating the spatial pattern of pairwise correlations shows that neighboring neurons show high correlations (5, 6, 19, 20) consistent with a high degree of local connectivity (21, 22), and Granger–Causal relationships in small networks (11, 23). The all-to-all pairwise relationships are far too dense to map out the most meaningful cell–cell couplings, so constraints such as thresholds are imposed to infer the topology of functional networks (24–27). Moreover, a large-scale orderly spatial functional organization is a salient feature of sensory cortices, and wiring constraints might influence the network topology. For example, systems that exhibit Rentian scaling are cost-efficiently embedded in physical space (28–30), meaning that functionally similar network nodes are mostly colocalized. Beyond the physical embedding of the network is the topological organization of the network itself. A common observation of many functional networks is the feature of small-world network organization, characterized by a high clustering coefficient and low mean path length (31, 32). Here, we investigated the 3D functional network topology of A1 L2/3 using chronic in vivo two-photon imaging in awake mice.
+---
 
-We presented tonal stimuli while imaging ∼1,000 neurons simultaneously to extract and analyze the topology of the functional networks within a cortical volume (∼370 × 370 × 100 µm). We found that volumes of L2/3 of the auditory cortex have a large diversity of tuning in relatively small volumes, yet still showed coarse spatial organization of similarly tuned neurons. Neurons were organized into microcolumns where neuronal tuning was similar with respect to depth but became dissimilar with respect to lateral distance away from the core of the columns. We constructed functional networks and found that functionally linked neurons were clustered in space, exhibited Rentian scaling, and that the functional network topology showed characteristics of small-world network organization. These two lines of evidence suggest that L2/3 auditory cortex neuronal networks fit characteristics of a cost-efficient organization, where functionally similar neurons are embedded in microcolumns while local tuning diversity is maintained, possibly to facilitate rapid plasticity and integration of information across the auditory cortex.
+## 🚀 Quick Start <a name="quick-start"></a>
 
-# Data File Tree
+1. Click **"Launch on qBraid"** above ☁️
+2. Run `run_models.ipynb` in qBraid Lab 🧪
+3. (Optional) Adjust parameters as needed 🛠️
+
+---
+
+## 🧬 Paper Summary <a name="paper-summary"></a>
+
+- The auditory cortex (A1) is organized tonotopically—frequency preferences vary smoothly across space.
+- In layer 2/3 (L2/3), neurons display **diverse tuning** but are organized in **microcolumns** by depth.
+- Functional networks were built using in vivo two-photon imaging of ~1,000 neurons during sound stimulation.
+- These networks show:
+  - **Small-world properties**
+  - **Rentian scaling**
+  - **Spatial clustering of functionally similar neurons**
+- Chronic 2P imaging of awake mice during tone presentation.
+- Motion correction (Fourier registration)
+- ROI detection (Chen et al. method)
+- Neuropil subtraction: `F = Fsoma − 0.7 × FNP`
+- Neurons identified as "responsive" via ANOVA (p < 0.01)
+- Tuning curves generated from ΔF/F₀
+- Best frequency (BF) = frequency with max average ΔF/F₀
+- "Tuned" neurons = top 30% by tuning curve z-score
+
+Suggesting L2/3 is organized for **efficient information processing** and **plasticity**.
+
+---
+
+## 🗂️ Data Structure <a name="data-structure"></a>
+
+Directory tree:
 ```
-data/.
-├── Auditory_cortex_data
-│   ├── 031020_367n_100um20st_FRA
-│   │   └── allPlanesVariables27-Feb-2021.mat
-│   ├── 031020_367r_100um20st_FRA
-│   │   └── allPlanesVariables27-Feb-2021.mat
-│   ├── 031120_352ll_100um20st_FRA
-│   │   └── allPlanesVariables27-Feb-2021.mat
-│   ├── 031120_352ll_100um20st_FRA_diffxy
-│   │   └── allPlanesVariables27-Feb-2021.mat
-│   ├── 080720_400r
-│   │   └── allPlanesVariables27-Feb-2021.mat
-│   ├── 081820_355n
-│   │   └── allPlanesVariables27-Feb-2021.mat
-│   ├── 081920_355l
-│   │   └── allPlanesVariables27-Feb-2021.mat
-│   ├── 081920_355r
-│   │   └── allPlanesVariables27-Feb-2021.mat
-│   ├── 082620_355l
-│   │   └── allPlanesVariables27-Feb-2021.mat
-│   ├── ant.m
-│   └── README.txt
-└── Auditory_cortex_data.zip
-
-11 directories, 12 files
+data/
+└── Auditory_cortex_data/
+    ├── [session folders]/
+    │   └── allPlanesVariables27-Feb-2021.mat
+    ├── ant.m
+    └── README.txt
 ```
 
-# Original Instructions
-This is the calcium imaging data set generated by 
+Each `.mat` file contains info from ~370×370×100 µm cortical volumes with 100s of neurons.
 
-There are 9 folders each with a file named 'allPlanesVariables27-Feb-2021.mat' containing neuron activity. These files are MATLAB files.
+---
 
-In each 'allPlanesVariables27-Feb-2021.mat' MATLAB file you will find
-several cell arrays with 7 entries correpsonding to the 7 imaging
-z-planes. The relevant cell arrays are allxc, allyc, allzc, and zDFF.
-
-The cell arrays allxc, allyc, allzc store 7 planes of microscope data and
-together they indicate the (x,y,z) coordinates of each of the neurons
-identified in the given plane. That is, allxc holds the x coordinates,
-allyc, the y coordinates, and allzc the z coordinates, for each neuron in
-that plane.
-
-You should ignore planes 1 and 7 as they are affected by fly-back frames.
-
-The cell array zDFF stores for each neuron in each plane its activity as
-a function of time.
-
-
-# Structure of the data file of each session
+## 🧾 Data Format <a name="data-format"></a>
 
 This is the output of `process_mat()` on an example session `allPlanesVariables27-Feb-2021.mat`. This funciton converts the matlab file into a nice python dictionary.
 Each plane is identified from 0 to 6. Here only plane 1 is shown as an example for some of the fields.
@@ -205,59 +205,18 @@ zStuff
     ...
 ```
 
-# Neuron Info Dataframe
-- Each row is a neuron
-- global_idx: is the global index of each neuron. from 0 to 529.
-- layer: the layer of each neruon
-- neuron_idx_in_layer: the index of each neuron in its layer
-- x: x coordinate of the neuron
-- y: y coordinate of the neuron
-- z: z coordinate of the neuron
-- activity: the activity of that neuron for the entire session
-- per_trial_activity: this is of shape (9, 10, num_time_steps) which is 9 frequencies 10 repetitions per frequency and time frames per trial. The frequency is an index into stimInfo/uFreqs to get the actual frequency that we don't care at the moment. we simply identify each frequency by its index from 0 to 8.
-- BFval: best frequency value for that neuron
-- BFresp: response of that neuron to its best frequency
-- PC: the first 4 principal component of each neuron for the entire session
-- global_corr: correlation array of each neuron to all the other neurons indexed by their global_idx
-- layer_distances: distance of each enuron to all the other neurons in its layer
+Each neuron is stored in a structured dictionary or DataFrame with fields like:
 
+| Field                | Description                                      |
+|---------------------|--------------------------------------------------|
+| `global_idx`         | Unique neuron ID (0–529)                        |
+| `layer`              | Cortical layer (1–6)                            |
+| `x, y, z`            | 3D coordinates                                  |
+| `activity`           | Full-session trace                              |
+| `per_trial_activity` | Shape: (9 freqs, 10 reps, T)                    |
+| `BFval`, `BFresp`    | Best frequency + response                       |
+| `PC`                 | First 4 PCA components                          |
+| `global_corr`        | Correlation with all other neurons              |
 
-# Methods
-We presented tonal stimuli while imaging ∼1,000 neurons simultaneously to extract and analyze the topology of the functional networks within a cortical volume (∼370 × 370 × 100 µm). We found that volumes of L2/3 of the auditory cortex have a large diversity of tuning in relatively small volumes, yet still showed coarse spatial organization of similarly tuned neurons. Neurons were organized into microcolumns where neuronal tuning was similar with respect to depth but became dissimilar with respect to lateral distance away from the core of the columns. We constructed functional networks and found that functionally linked neurons were clustered in space, exhibited Rentian scaling, and that the functional network topology showed characteristics of small-world network organization. These two lines of evidence suggest that L2/3 auditory cortex neuronal networks fit characteristics of a cost-efficient organization, where functionally similar neurons are embedded in microcolumns while local tuning diversity is maintained, possibly to facilitate rapid plasticity and integration of information across the auditory cortex.
+---
 
-
-Data analysis
-Two-photon image analysis
-Two-photon image sequences were processed using methods previously described (19, 65). Image sequences were corrected for x–y drifts and movement artifacts using discrete Fourier transform registration (66) implemented in MATLAB (Mathworks). Neurons were identified manually from an average image across all motion-corrected images. Ring-like regions of interest (ROI) boundaries were programmatically drawn based on the method described by Chen et al. (67). Overlapping ROI pixels (due to closely juxtaposed neurons) were excluded from the analysis. For each selected neuron, a raw fluorescence signal over time (Fsoma) was extracted by averaging across pixels from the ROI overlying the soma. Neuropil (NP) correction was performed on the raw fluorescence of all soma ROIs (Fsoma) (68). In short, the NP ROI was drawn based on the outer boundary of the soma ROI and extended from one pixel beyond the soma ROI outer boundary to 15 μm, excluding any pixels assigned to neighboring somata. The resulting fluorescence intensity (F) used for analysis was calculated as F = Fsoma − (α×FNP), where we use a default value of α = 0.7 to reduce fluorescence contamination from the NP (68). The NP-corrected fluorescence for each neuron was then converted to a relative fluorescence amplitude (ΔF/F0), where ΔF = (F − F0). F0 was estimated using a sliding window approach that calculated the average fluorescence of points less than the 50th percentile in a 10-s sliding window, as similarly reported in previous studies (69, 70).
-
-We tested the sensitivity of NP subtraction by investigating how fluorescent traces and pairwise correlations were altered at different NP subtraction coefficients. First, to investigate how individual neuronal traces are altered, we computed the self-similarity of ΔF/F traces at each level of NP subtraction. NP subtraction was performed at 11 different values (α = 0 to α = 1 at 0.1 intervals), and the correlation between ΔF/F traces from the same neuron at each α value was computed. ΔF/F traces were minimally altered with respect to the percentage of NP subtracted except at large differences (i.e. differences of 70% or greater) (Fig. S2A). Within the range of 60–90% NP subtracted, there was nearly no difference in ΔF/F traces as indicated by neuronal self-correlations centered on unity (Fig. S2A). Next, we aimed to investigate how pairwise correlations, as measured by similarities in tuning curves, were altered with respect to NP percent subtraction. We found that NP subtraction decreases pairwise correlations as expected, though the effect was minimal (Fig. S2B). The difference in SCs on a single neuron basis from 70 to 0% NP subtracted was −0.07± 0.17 (mean ±std), indicating a very small average decrease even at a large difference in NP subtracted. The difference in SCs is significantly smaller within the range of 60–90% subtraction (Fig. S2B). These results indicate that the amount of NP signal subtracted has an expected effect of lowering pairwise correlations, though the effect is very minimal.
-
-Neuronal receptive fields and tuning
-Neuronal tuning and responsiveness were assessed using methods described previously (19). Neurons in which the ΔF/F0 signal was significantly modulated by sound presentation (and deemed “responsive”) were defined by ANOVA (P < 0.01) across baseline (prestimulus) and all sound presentation periods. Neuron receptive fields (tuning curves) were determined as the average ΔF/F0 response during the stimulus presentation for each frequency across all stimulus repetitions. BF for each neuron was determined as the stimulus frequency that elicited the highest average ΔF/F0 response (peak of the tuning curve). To determine if a neuron was tuned or untuned, we computed a z-score from the tuning curve to find peaks that deviated significantly from the mean of the tuning curve. To isolate the most distinctly tuned neurons, tuned neurons were defined as the upper 30% quantile of the max z-score distribution from all responding neurons. The tuned/untuned distinction was only utilized for analyses of BF, whereas all correlation and functional networks made use of all responding neurons, regardless of how selectively tuned they were.
-
-# Hypothesis using GNNs
-
-For all the tasks below we sub sample graphs of aorund 10-20 nodes either using structural information (k-nn) or functional information (thresholding).
-
-
-1- Link prediction on neurons with the same BF
-    - With graphs where edges are based on structural closeness of neurons
-    - With graphs where edges are based on functional closeness of neurons
-    - See which one performs the best.
-    Link prediction
-
-2- Predict BF of each neuron (node) based on
-    - Functional
-    - Structural
-    edges.
-    Node classification.
-
-3- Predict the stimuli frequency from the graph
-    - Funcitonal
-    - Structural
-    edges. 
-    Graph classification
-
-4- For each sampled grpah we can check the diversity of BF and draw conclusions based on the classifciation/prediciton results. e. g. graphs with strong BF preference have better performance.
-
-To run the code click on the button below! 
