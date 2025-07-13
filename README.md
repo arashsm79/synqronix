@@ -1,4 +1,4 @@
-[<img src="https://qbraid-static.s3.amazonaws.com/logos/Launch_on_qBraid_black.png" width="150">](https://account.qbraid.com?gitHubUrl=<YOUR GIT .git LINK>)
+[<img src="https://qbraid-static.s3.amazonaws.com/logos/Launch_on_qBraid_black.png" width="150">](https://account.qbraid.com?gitHubUrl=<https://github.com/arashsm79/synqronix.git>)
 
 # To run the code
 
