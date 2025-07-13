@@ -3,8 +3,7 @@
 # To run the code
 
 1.  Click the "Launch on qBraid" button above. This will open a new qBraid Lab instance and clone this repository.
-2.  Once qBraid Lab loads, open a new Terminal (File -> New -> Terminal).
-3.  Run the `run_models.ipynb` notebook.
+2.  Once qBraid Lab loads, run the `run_models.ipynb` notebook.
     (Adjust the parameters as needed.)
 
 # Introduction
