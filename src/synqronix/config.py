@@ -4,7 +4,7 @@ import argparse
 def add_io_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     """File-system input/output."""
     group = parser.add_argument_group("I/O")
-    group.add_argument("--data_dir", type=str, required=True, help="Directory containing .mat files")
+    group.add_argument("--data_dir", type=str, default="./data", help="Directory containing .mat files")
     group.add_argument("--save_dir", type=str, default="./results", help="Directory to save results and checkpoints")
     return parser
 
@@ -76,12 +76,11 @@ def add_quantum_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser
         "--quantum_device",
         type=str,
         default=None,
-        required=True,
         choices=["ionq_aria", "ionq_forte", "default", "ionq_sim"],
         help="Quantum backend name (e.g. 'ibmq_qasm_simulator', 'ionq_qpu')",
     )
     group.add_argument("--shots", type=int, default=None, help="Number of circuit executions per job (shots)")
-    group.add_argument("--api_key", type=str, default=None, required=True, help="Provider API key/token")
+    group.add_argument("--api_key", type=str, default=None, help="Provider API key/token")
     group.add_argument("--q_depths", type=int, nargs="+", default=[2, 2], help="Quantum circuit depths for each layer")
     return parser
 
@@ -106,15 +105,21 @@ def build_arg_parser() -> argparse.ArgumentParser:
 
 def _validate_quantum_args(args: argparse.Namespace, parser: argparse.ArgumentParser) -> None:
     """Enforce that the QPU‑related arguments are provided when needed."""
-    if args.model_type == "QGNN":
-        missing = [
-            f"--{flag}"
-            for flag in ("quantum_device", "shots", "api_key")
-            if getattr(args, flag) is None
-        ]
+    if args.model_type == "QGCN": # Make sure this matches your model type name
+        missing = []
+        # Check if quantum_device is required and missing
+        if args.quantum_device is None or args.quantum_device == 'default':
+            if args.quantum_device not in ['default', 'ionq_sim'] and args.api_key is None and os.getenv("QBRAID_API_KEY") is None:
+                missing.append("--api_key (or QBRAID_API_KEY env var)")
+            if args.quantum_device is None:
+                missing.append("--quantum_device")
+
+        if args.shots is None:
+            missing.append("--shots")
+
         if missing:
             parser.error(
-                "When --model_type is 'QGNN', the following arguments are required: "
+                "When --model_type is 'QGCN', the following arguments are required: "
                 + ", ".join(missing)
             )
 
@@ -125,9 +130,10 @@ def _validate_quantum_args(args: argparse.Namespace, parser: argparse.ArgumentPa
 
 def define_parameters() -> None:
     parser = build_arg_parser()
-    args = parser.parse_args()
-    _validate_quantum_args(args, parser)
-    return args
+    return parser
 
 if __name__ == "__main__":
-    define_parameters()
+    parser = define_parameters()
+    args = parser.parse_args()
+    _validate_quantum_args(args, parser)
+    print("Arguments parsed successfully!")

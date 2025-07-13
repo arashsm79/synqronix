@@ -6,8 +6,8 @@ import os
 import time
 from tqdm import tqdm
 import numpy as np
-from evaluation import evaluate_model, compute_metrics
-from models.gnn import NeuralGNN, NeuralGNNWithAttention
+from src.synqronix.evaluation import evaluate_model, compute_metrics
+from src.synqronix.models.gnn import NeuralGNN, NeuralGNNWithAttention
 
 class GNNTrainer:
     def __init__(self, model, device, save_dir='checkpoints', checkpoint_freq=5):
@@ -63,11 +63,11 @@ class GNNTrainer:
             batch = batch.to(self.device)
             self.optimizer.zero_grad()
             
-            if isinstance(self.model, NeuralGNNWithAttention):
-                out = self.model(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
+            # if isinstance(self.model, NeuralGNNWithAttention):
+            #     out = self.model(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
             # else:
 
-            # out = self.model(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
+            out = self.model(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
             
             loss = self.criterion(out, batch.y)
             

@@ -5,7 +5,7 @@ import torch
 from torch_geometric.data import Data, DataLoader
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 import scipy.io
-from dataproc.utils import process_mat, create_neuron_info_df
+from src.synqronix.dataproc.utils import process_mat, create_neuron_info_df
 from torch_geometric.utils import to_undirected
 from itertools import combinations
 

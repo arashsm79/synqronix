@@ -7,7 +7,7 @@ from torch_geometric.nn.conv.gcn_conv import gcn_norm
 from torch_geometric.typing import OptTensor
 from torch_geometric.nn import HypergraphConv
 
-from models.qgcn_node_embedding import quantum_net
+from src.synqronix.models.qgcn_node_embedding import quantum_net
 
 
 class GCNConv(MessagePassing):

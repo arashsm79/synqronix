@@ -3,17 +3,16 @@ import argparse
 import os
 import sys
 
-from synqronix.dataproc import dataloader
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from torch.nn import LeakyReLU, Linear, ReLU, Dropout
-from synqronix.dataproc.dataloader import NeuralGraphDataLoader, ColumnarNeuralGraphDataLoader
-from synqronix.models.gnn import NeuralGNN, NeuralGNNWithAttention
-from synqronix.trainer import GNNTrainer
-from synqronix.evaluation import full_evaluation, plot_training_curves, load_and_evaluate
-from synqronix.models.qgcn import QGCN
-from synqronix.config import define_parameters
-from synqronix.utils import setup_quantum_device
+from src.synqronix.dataproc.dataloader import NeuralGraphDataLoader, ColumnarNeuralGraphDataLoader
+from src.synqronix.models.gnn import NeuralGNN, NeuralGNNWithAttention
+from src.synqronix.trainer import GNNTrainer
+from src.synqronix.evaluation import full_evaluation, plot_training_curves, load_and_evaluate
+from src.synqronix.models.qgcn import QGCN
+from src.synqronix.config import define_parameters
+from src.synqronix.utils import setup_quantum_device
 
 
 def set_seed(seed=42):

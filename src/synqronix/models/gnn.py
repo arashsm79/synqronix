@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv, GATConv, global_mean_pool, BatchNorm
-
+from torch_geometric.nn import HypergraphConv   
 class NeuralGNN(nn.Module):
     def __init__(self, num_features, num_classes, hidden_dim=64, num_layers=3, dropout_rate=0.5, model_type='GCN'):
         """
@@ -139,3 +139,56 @@ class NeuralGNNWithAttention(nn.Module):
         x = self.classifier(x)
         
         return x
+    
+class HyperGNN(nn.Module):
+    """
+    Classical baseline that processes the very same k-body hyperedges
+    as QGCN but uses a linear message function instead of a quantum nodeNN.
+    """
+
+    def __init__(self, num_features, num_classes,
+                 hidden_dim=64, num_layers=3, dropout=0.5):
+        super().__init__()
+
+        self.num_layers = num_layers
+        self.dropout    = dropout
+
+        self.convs = nn.ModuleList()
+        self.norms = nn.ModuleList()
+
+        # first layer
+        self.convs.append(HypergraphConv(num_features, hidden_dim))
+        self.norms.append(BatchNorm(hidden_dim))
+
+        # hidden layers
+        for _ in range(num_layers - 2):
+            self.convs.append(HypergraphConv(hidden_dim, hidden_dim))
+            self.norms.append(BatchNorm(hidden_dim))
+
+        # last layer (keep feature size)
+        self.convs.append(HypergraphConv(hidden_dim, hidden_dim))
+        self.norms.append(BatchNorm(hidden_dim))
+
+        # same classifier head you used before
+        self.classifier = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim // 2),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim // 2, num_classes)
+        )
+
+    # --------------------------------------------------------
+    def forward(self, x, edge_index=None, edge_attr=None,
+                hyperedge_index=None, batch=None):
+        """
+        Exactly the same call signature as your QGCN, but the
+        hyperedge_index is the one that matters.
+        """
+        for conv, norm in zip(self.convs, self.norms):
+            x = conv(x, hyperedge_index)      # <── classical H-graph message
+            x = norm(x)
+            x = F.relu(x)
+            x = F.dropout(x, p=self.dropout, training=self.training)
+
+        # node-level prediction: no pooling
+        return self.classifier(x)
