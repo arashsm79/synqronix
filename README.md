@@ -1,14 +1,9 @@
-[<img src="https://qbraid-static.s3.amazonaws.com/logos/Launch_on_qBraid_black.png" width="150">](https://account.qbraid.com?gitHubUrl=<YOUR GIT .git LINK>)
+[<img src="https://qbraid-static.s3.amazonaws.com/logos/Launch_on_qBraid_black.png" width="150">](https://account.qbraid.com?gitHubUrl=<https://github.com/arashsm79/synqronix.git>)
 
 # To run the code
 
 1.  Click the "Launch on qBraid" button above. This will open a new qBraid Lab instance and clone this repository.
-2.  Once qBraid Lab loads, open a new Terminal (File -> New -> Terminal).
-3.  Activate the correct environment (if you have one specified in a `.qbraid/environment.yaml` or similar, or just assume the default Python kernel).
-4.  Run the training script using:
-    ```bash
-    python run_models.py --data_dir data/ --num_epochs 100 --quantum_device ionq_aria --api_key your_qbraid_qpi_key
-    ```
+2.  Once qBraid Lab loads, run the `run_models.ipynb` notebook.
     (Adjust the parameters as needed.)
 
 # Introduction
