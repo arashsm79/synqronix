@@ -1,3 +1,7 @@
+Team: SynQronix
+Project Name: Graph-Based Modeling of Neural Organization in the Auditory Cortex using Classical and Quantum Graph Neural Networks
+Track: NeuroQuantum Nexus
+
 [<img src="https://qbraid-static.s3.amazonaws.com/logos/Launch_on_qBraid_black.png" width="150">](https://account.qbraid.com?gitHubUrl=<https://github.com/arashsm79/synqronix.git>)
 
 # To run the code
@@ -6,6 +10,7 @@
 2.  Download the data from this link and put it in `/data` folder: https://gcell.umd.edu/. 
 3.  Once qBraid Lab loads, run the `run_models.ipynb` notebook.
     (Adjust the parameters as needed.)
+This will output the results, including training and validation loss and accuracy, F1 score and ROC-AUC scores for GCN and QGCN respectively.
 
 # 🧠 Mouse Auditory Cortex: Network Analysis with QGNNs  
 
