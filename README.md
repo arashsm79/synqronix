@@ -1,5 +1,7 @@
 Team: SynQronix
+
 Project Name: Graph-Based Modeling of Neural Organization in the Auditory Cortex using Classical and Quantum Graph Neural Networks
+
 Track: NeuroQuantum Nexus
 
 [<img src="https://qbraid-static.s3.amazonaws.com/logos/Launch_on_qBraid_black.png" width="150">](https://account.qbraid.com?gitHubUrl=<https://github.com/arashsm79/synqronix.git>)
